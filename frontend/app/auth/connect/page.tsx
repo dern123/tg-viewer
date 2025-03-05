@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
- const URL = "http://127.0.0.1:8000"
+const URL = "http://127.0.0.1:8000";
+
 export default function ConnectPage() {
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
   const [step, setStep] = useState(1);
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
   const router = useRouter();
 
   const handleSendCode = async () => {
@@ -22,12 +23,13 @@ export default function ConnectPage() {
         setStep(2);
       } else {
         const err = await res.json();
-        if (Array.isArray(err.detail)) {
-          setError(err.detail.map((e:any) => e.msg).join(", "));
+        if (typeof err.detail === 'string') {
+          setError(err.detail);
+        } else if (Array.isArray(err.detail)) {
+          setError(err.detail.map((e: any) => e.msg).join(", "));
         } else {
-          setError(err.detail || "Помилка відправки коду");
+          setError("Помилка відправки коду");
         }
-        
       }
     } catch (err) {
       setError("Сервер недоступний");
@@ -46,12 +48,13 @@ export default function ConnectPage() {
         router.push("/chats");
       } else {
         const err = await res.json();
-        if (Array.isArray(err.detail)) {
-          setError(err.detail.map((e:any) => e.msg).join(", "));
+        if (typeof err.detail === 'string') {
+          setError(err.detail);
+        } else if (Array.isArray(err.detail)) {
+          setError(err.detail.map((e: any) => e.msg).join(", "));
         } else {
-          setError(err.detail || "Помилка авторизації");
+          setError("Помилка авторизації");
         }
-        
       }
     } catch (err) {
       setError("Сервер недоступний");
@@ -98,7 +101,7 @@ export default function ConnectPage() {
             </button>
           </>
         )}
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        {error && <p className="text-red-500 text-sm mt-2">{typeof error === 'string' ? error : JSON.stringify(error)}</p>}
       </div>
     </div>
   );

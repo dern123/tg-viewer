@@ -10,14 +10,27 @@ type Chat = {
 
 export default function ChatsPage() {
   const [chats, setChats] = useState<Chat[]>([]);
+  const [isMounted, setIsMounted] = useState(false);  // ✅ Додано для запобігання Hydration failed
   const router = useRouter();
 
+  // ✅ Використовуємо useEffect для встановлення isMounted
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/chats")
-      .then((res) => res.json())
-      .then((data: Chat[]) => setChats(data))
-      .catch((error) => console.error("Помилка отримання чатів:", error));
+    setIsMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (isMounted) {  // ✅ Перевірка isMounted замість window
+      fetch("http://127.0.0.1:8000/chats")
+        .then((res) => res.json())
+        .then((data: Chat[]) => setChats(data))
+        .catch((error) => console.error("Помилка отримання чатів:", error));
+    }
+  }, [isMounted]);
+
+  // Якщо компонент ще не змонтовано, повертаємо loader або порожній div
+  if (!isMounted) {
+    return <div>Завантаження...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">

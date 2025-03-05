@@ -57,7 +57,7 @@ export default function RegisterPage() {
           className="border p-2 mb-2 w-full"
           required
         />
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+        {error && <p className="text-red-500 text-sm mb-2">{typeof error === 'string' ? error : JSON.stringify(error)}</p>}
         <button className="bg-blue-500 text-white py-2 px-4 rounded">Зареєструватися</button>
         <button className="bg-blue-500 text-white py-2 px-4 rounded ml-2" onClick={() => router.push("/auth/login")}>Вхід</button>
 
